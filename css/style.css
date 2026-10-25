@@ -1,0 +1,367 @@
+:root {
+    --pixel-border: #3b2416;
+    --pixel-bg: #fff8e7;
+    --pixel-accent: #f59e0b;
+}
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    font-family: 'Noto Sans TC', 'DotGothic16', sans-serif;
+    background-color: #1e2430;
+    color: #2d1e12;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.pixel-font {
+    font-family: 'DotGothic16', 'Noto Sans TC', monospace;
+    letter-spacing: 0.5px;
+}
+
+/* Kairosoft-style Pixel UI Windows & Borders */
+.kairo-panel {
+    background: #fff9eb;
+    border: 4px solid #3d2516;
+    box-shadow: 
+        inset 0 0 0 3px #f3d9a4,
+        0 6px 0 #23140b,
+        0 10px 20px rgba(0, 0, 0, 0.45);
+    border-radius: 10px;
+}
+
+.kairo-header {
+    background: linear-gradient(180deg, #ff9933 0%, #e66a00 100%);
+    border-bottom: 4px solid #3d2516;
+    color: #ffffff;
+    text-shadow: 2px 2px 0 #3d2516, -1px -1px 0 #3d2516, 1px -1px 0 #3d2516, -1px 1px 0 #3d2516;
+}
+
+.kairo-btn {
+    border: 3px solid #3d2516;
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2), 0 3px 0 #23140b;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+    border-radius: 8px;
+    font-weight: 800;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+}
+
+.kairo-btn:hover:not(:disabled) {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2), 0 4px 0 #23140b;
+}
+
+.kairo-btn:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.2), 0 1px 0 #23140b;
+}
+
+.kairo-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* Isometric / 2.5D Pixel Office Room Styling */
+.office-viewport {
+    position: relative;
+    width: 100%;
+    min-height: 670px;
+    background: linear-gradient(180deg, #72d6ff 0%, #b5ecff 22%, #6e4e37 22%, #5a3e2b 100%);
+    border: 4px solid #3d2516;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.25), 0 8px 0 #151922;
+}
+
+/* Sky & City Skyline Strip */
+.sky-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 138px;
+    background: linear-gradient(180deg, #58c4f6 0%, #9be2ff 70%, #d2f4ff 100%);
+    z-index: 1;
+    overflow: hidden;
+}
+
+.city-silhouette {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background-image: 
+        linear-gradient(90deg, 
+            #7ec8eb 0px, #7ec8eb 28px, transparent 28px, transparent 36px,
+            #6bbbe2 36px, #6bbbe2 75px, transparent 75px, transparent 84px,
+            #87d0f0 84px, #87d0f0 115px, transparent 115px, transparent 125px,
+            #6bbbe2 125px, #6bbbe2 170px, transparent 170px, transparent 182px,
+            #7ec8eb 182px, #7ec8eb 220px, transparent 220px, transparent 240px
+        );
+    background-size: 240px 100%;
+    opacity: 0.75;
+}
+
+/* Office Back Wall with Big Pixel Windows */
+.office-wall {
+    position: absolute;
+    top: 52px;
+    left: 0;
+    right: 0;
+    height: 92px;
+    background: #e9e2d0;
+    border-top: 6px solid #8c7b65;
+    border-bottom: 8px solid #594433;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 24px;
+    box-shadow: inset 0 -6px 0 #cfc4ae;
+}
+
+.office-window {
+    width: 110px;
+    height: 54px;
+    background: linear-gradient(135deg, #86dcff 0%, #baefff 50%, #7fd4ff 51%, #a6e7ff 100%);
+    border: 4px solid #6e6254;
+    box-shadow: inset 0 0 0 2px #ffffff, 0 2px 0 #cfc4ae;
+    position: relative;
+}
+
+.office-window::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 4px;
+    margin-left: -2px;
+    background: #6e6254;
+}
+
+/* Kairosoft Checkered Brown Floor */
+.office-floor {
+    position: absolute;
+    top: 144px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #8f6239;
+    background-image: 
+        linear-gradient(45deg, #825630 25%, transparent 25%), 
+        linear-gradient(-45deg, #825630 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #825630 75%), 
+        linear-gradient(-45deg, transparent 75%, #825630 75%);
+    background-size: 48px 48px;
+    background-position: 0 0, 0 24px, 24px -24px, -24px 0;
+    z-index: 2;
+}
+
+/* Right-side Management Raised Wood Platform Carpet */
+.management-zone-floor {
+    position: absolute;
+    top: 164px;
+    right: 18px;
+    width: 32%;
+    bottom: 22px;
+    background-color: #6f4526;
+    background-image: radial-gradient(#7d502e 20%, transparent 20%);
+    background-size: 16px 16px;
+    border: 4px solid #492a13;
+    box-shadow: inset 0 0 0 3px #9c6a44, -6px 6px 0 rgba(0, 0, 0, 0.22);
+    border-radius: 8px;
+    z-index: 3;
+}
+
+/* Left-side Employee Zone Floor Mat */
+.employee-zone-floor {
+    position: absolute;
+    top: 164px;
+    left: 18px;
+    width: 63%;
+    bottom: 22px;
+    border: 3px dashed rgba(255, 235, 190, 0.3);
+    border-radius: 8px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* Center Red/Gold Runner Carpet Aisle */
+.office-aisle {
+    position: absolute;
+    top: 50%;
+    left: 61%;
+    width: 7%;
+    height: 64px;
+    transform: translateY(-50%);
+    background: repeating-linear-gradient(90deg, #b93829 0px, #b93829 10px, #d94c3a 10px, #d94c3a 20px);
+    border-top: 4px solid #f4c44e;
+    border-bottom: 4px solid #f4c44e;
+    z-index: 3;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* Character Bobbing & Working Animations */
+@keyframes pixelBob {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes pixelWorkFast {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-3px) rotate(-2deg); }
+    75% { transform: translateY(-2px) rotate(2deg); }
+}
+
+@keyframes bossWalkStep {
+    0%, 100% { transform: translateY(0px) rotate(-4deg); }
+    50% { transform: translateY(-6px) rotate(4deg); }
+}
+
+@keyframes floatBubble {
+    0%, 100% { transform: translate(-50%, 0px); }
+    50% { transform: translate(-50%, -5px); }
+}
+
+@keyframes statPopUp {
+    0% { opacity: 0; transform: translate(-50%, 8px) scale(0.8); }
+    20% { opacity: 1; transform: translate(-50%, -6px) scale(1.05); }
+    80% { opacity: 1; transform: translate(-50%, -18px) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -26px) scale(0.9); }
+}
+
+@keyframes pulseBadge {
+    0%, 100% { transform: translate(-50%, 0) scale(1); }
+    50% { transform: translate(-50%, -6px) scale(1.12); }
+}
+
+.animate-bob {
+    animation: pixelBob 1.6s infinite ease-in-out;
+}
+
+.animate-work {
+    animation: pixelWorkFast 0.45s infinite ease-in-out;
+}
+
+.animate-walk {
+    animation: bossWalkStep 0.28s infinite ease-in-out;
+}
+
+.speech-bubble {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    border: 3px solid #2b190d;
+    border-radius: 8px;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #2b190d;
+    white-space: nowrap;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+    z-index: 35;
+    animation: floatBubble 1.8s infinite ease-in-out;
+    pointer-events: none;
+}
+
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: #2b190d transparent;
+}
+
+.stat-popup {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: 900;
+    font-size: 14px;
+    color: #ffffff;
+    text-shadow: 2px 2px 0 #1e3a8a, -1px -1px 0 #1e3a8a, 1px -1px 0 #1e3a8a, -1px 1px 0 #1e3a8a;
+    background: rgba(30, 58, 138, 0.85);
+    border: 2px solid #93c5fd;
+    border-radius: 6px;
+    padding: 1px 6px;
+    white-space: nowrap;
+    z-index: 45;
+    pointer-events: none;
+    animation: statPopUp 1.8s forwards ease-out;
+}
+
+/* Desk Station Card in Office */
+.desk-station {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.desk-station:hover {
+    transform: translateY(-3px) scale(1.03);
+    z-index: 25;
+}
+
+.desk-station:hover .station-label {
+    background: #f59e0b;
+    color: #fff;
+    border-color: #2b190d;
+}
+
+/* Walking Boss Overlay Sprite */
+#walkingBossSprite {
+    position: absolute;
+    width: 68px;
+    height: 78px;
+    z-index: 50;
+    pointer-events: none;
+    transition-property: left, top;
+    transition-timing-function: linear;
+    display: none;
+}
+
+/* Manager Overhead Status Badge */
+.manager-status-badge {
+    position: absolute;
+    top: -42px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 40;
+    animation: pulseBadge 1.1s infinite ease-in-out;
+    filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.45));
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f3d9a4;
+    border-left: 2px solid #3d2516;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c2782b;
+    border: 2px solid #3d2516;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a35f1a;
+}

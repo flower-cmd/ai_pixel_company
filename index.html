@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 像素公司 - Pixel AI Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="min-h-screen flex flex-col justify-between p-2 sm:p-4">
+
+    <!-- ==================== TOP HUD BAR ==================== -->
+    <header class="max-w-7xl w-full mx-auto mb-3 kairo-panel p-2.5 sm:px-5 flex flex-wrap items-center justify-between gap-3 z-30">
+        <!-- Brand & Company Name -->
+        <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-lg bg-amber-400 border-3 border-[#3d2516] flex items-center justify-center shadow-inner">
+                <svg class="w-8 h-8" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                    <rect x="3" y="2" width="10" height="9" fill="#facc15"/>
+                    <rect x="2" y="3" width="1" height="7" fill="#3d2516"/>
+                    <rect x="13" y="3" width="1" height="7" fill="#3d2516"/>
+                    <rect x="3" y="1" width="10" height="1" fill="#3d2516"/>
+                    <rect x="3" y="11" width="10" height="1" fill="#3d2516"/>
+                    <rect x="5" y="5" width="2" height="2" fill="#1e293b"/>
+                    <rect x="9" y="5" width="2" height="2" fill="#1e293b"/>
+                    <rect x="6" y="8" width="4" height="1" fill="#ef4444"/>
+                    <rect x="4" y="12" width="8" height="3" fill="#2563eb"/>
+                </svg>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-lg sm:text-xl font-black tracking-wide text-[#3d2516] pixel-font">開羅風 AI 像素株式會社</h1>
+                    <span class="bg-emerald-600 text-white text-xs font-bold px-2 py-0.5 rounded border-2 border-[#3d2516]">營運中</span>
+                </div>
+                <p class="text-xs text-amber-900 font-medium">點擊右側【老闆】指派任務、點擊【主管】查看全體員工進度，或直接點擊左側【員工】對話</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Settings -->
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+            <!-- Quick Walk Toggle -->
+            <button id="quickWalkToggleBtn" onclick="toggleWalkAnimation()" class="kairo-btn bg-amber-100 hover:bg-amber-200 text-[#3d2516] px-3 py-1.5 text-xs sm:text-sm flex items-center gap-2" style="text-shadow:none;">
+                <span id="quickWalkIcon" class="text-base">🚶</span>
+                <span>老闆走過去動畫：<strong id="quickWalkStatusText" class="text-emerald-700">開啟</strong></span>
+            </button>
+
+            <!-- Quick Boss Button -->
+            <button onclick="openBossModal()" class="kairo-btn bg-amber-500 text-white px-3 py-1.5 text-xs sm:text-sm flex items-center gap-1.5">
+                <span>👑</span>
+                <span>點開老闆 (員工名冊)</span>
+            </button>
+
+            <!-- Quick Manager Button -->
+            <button onclick="openManagerModal()" class="kairo-btn bg-sky-600 text-white px-3 py-1.5 text-xs sm:text-sm flex items-center gap-1.5 relative">
+                <span>📋</span>
+                <span>點開主管 (工作進度)</span>
+                <span id="hudManagerMiniBadge" class="hidden ml-1 px-1.5 py-0.2 bg-white text-[#3d2516] rounded text-xs font-black">!</span>
+            </button>
+
+            <!-- Settings Button -->
+            <button onclick="openSettingsModal()" class="kairo-btn bg-stone-700 text-white px-3 py-1.5 text-xs sm:text-sm flex items-center gap-1">
+                <span>⚙️</span>
+                <span class="hidden sm:inline">設定</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ==================== MAIN PIXEL OFFICE VIEWPORT ==================== -->
+    <main class="max-w-7xl w-full mx-auto flex-1 flex flex-col">
+        <div id="officeViewport" class="office-viewport select-none">
+
+            <!-- 1. Sky & City Background -->
+            <div class="sky-backdrop">
+                <div class="city-silhouette"></div>
+                <div class="absolute top-3 left-16 w-20 h-6 bg-white/80 rounded-sm shadow-sm"></div>
+                <div class="absolute top-6 left-1/3 w-28 h-7 bg-white/75 rounded-sm shadow-sm"></div>
+                <div class="absolute top-2 right-1/4 w-24 h-6 bg-white/85 rounded-sm shadow-sm"></div>
+            </div>
+
+            <!-- 2. Office Upper Wall & Windows & Decor -->
+            <div class="office-wall">
+                <!-- Left Vending Machine & Plant -->
+                <div class="flex items-end gap-2 z-10 -mb-6">
+                    <div class="w-12 h-20 bg-red-600 border-3 border-[#3d2516] rounded-t-sm p-1 flex flex-col justify-between shadow-md" title="像素能量販賣機">
+                        <div class="bg-sky-100 border-2 border-[#3d2516] h-10 p-0.5 grid grid-cols-3 gap-0.5">
+                            <div class="bg-emerald-500 h-2"></div>
+                            <div class="bg-amber-400 h-2"></div>
+                            <div class="bg-blue-500 h-2"></div>
+                            <div class="bg-pink-500 h-2"></div>
+                            <div class="bg-purple-500 h-2"></div>
+                            <div class="bg-lime-500 h-2"></div>
+                        </div>
+                        <div class="h-3 bg-stone-800 border border-stone-600 mx-1"></div>
+                    </div>
+                    <div class="flex flex-col items-center" title="辦公室盆栽">
+                        <div class="w-8 h-8 bg-emerald-500 rounded-full border-3 border-[#14532d] shadow-inner"></div>
+                        <div class="w-6 h-5 bg-amber-700 border-2 border-[#3d2516] -mt-1"></div>
+                    </div>
+                </div>
+
+                <div class="office-window hidden sm:block"></div>
+
+                <!-- Planning Whiteboard -->
+                <div class="w-36 sm:w-44 h-20 bg-white border-4 border-stone-600 rounded-sm shadow-md p-2 flex flex-col justify-between -mb-4 z-10" title="AI 專案研發白板">
+                    <div class="flex items-center justify-between border-b-2 border-stone-200 pb-1">
+                        <span class="text-[10px] font-black text-stone-700 pixel-font">AI 研發目標進度表</span>
+                        <span class="w-2.5 h-2.5 bg-red-500 inline-block"></span>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="w-4/5 h-1.5 bg-red-500"></div>
+                        <div class="w-3/5 h-1.5 bg-stone-400"></div>
+                        <div class="w-2/3 h-1.5 bg-sky-500"></div>
+                    </div>
+                    <div class="text-[9px] text-right text-stone-500 font-bold">PROMPT +100%</div>
+                </div>
+
+                <div class="office-window hidden md:block"></div>
+                <div class="office-window hidden lg:block"></div>
+
+                <!-- Right Golden Trophy Shelf -->
+                <div class="flex items-end gap-2 z-10 -mb-6">
+                    <div class="w-20 h-16 bg-stone-700 border-3 border-[#3d2516] p-1 flex flex-col justify-between shadow-md" title="榮譽獎盃櫃">
+                        <div class="flex items-end justify-around h-8">
+                            <div class="w-2.5 h-6 bg-emerald-400 border border-[#3d2516]"></div>
+                            <div class="w-3 h-6 bg-lime-400 border border-[#3d2516]"></div>
+                            <div class="w-5 h-7 bg-amber-400 border-2 border-[#3d2516] rounded-t-full flex items-center justify-center text-[10px]">🏆</div>
+                        </div>
+                        <div class="h-4 bg-stone-800 border-t-2 border-stone-500"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Checkered Pixel Floor & Zones -->
+            <div class="office-floor"></div>
+
+            <!-- Left Zone Label & Carpet Border -->
+            <div class="employee-zone-floor">
+                <div class="absolute -top-3.5 left-4 bg-[#3d2516] text-amber-200 text-xs font-black px-3 py-0.5 rounded border-2 border-amber-400 shadow">
+                    💻 左側：AI 員工辦公區 (<span id="employeeCountLabel">8</span> 人)
+                </div>
+            </div>
+
+            <!-- Center Aisle Carpet -->
+            <div class="office-aisle" title="老闆巡視走道"></div>
+
+            <!-- Right Zone Carpet & Label -->
+            <div class="management-zone-floor">
+                <div class="absolute -top-3.5 right-4 bg-[#3d2516] text-amber-300 text-xs font-black px-3 py-0.5 rounded border-2 border-amber-400 shadow">
+                    🏢 右側：管理決策專區 (老闆 & 主管)
+                </div>
+            </div>
+
+            <!-- 4. WALKING BOSS DYNAMIC SPRITE OVERLAY -->
+            <div id="walkingBossSprite">
+                <div id="walkingBossBubble" class="speech-bubble">交給你了！</div>
+                <div class="w-full h-full flex flex-col items-center animate-walk">
+                    <svg class="w-14 h-14 drop-shadow-md" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                        <rect x="4" y="1" width="8" height="2" fill="#facc15"/>
+                        <rect x="5" y="0" width="2" height="1" fill="#facc15"/>
+                        <rect x="9" y="0" width="2" height="1" fill="#facc15"/>
+                        <rect x="3" y="2" width="10" height="3" fill="#271c19"/>
+                        <rect x="4" y="4" width="8" height="4" fill="#fed7aa"/>
+                        <rect x="4" y="5" width="3" height="2" fill="#111827"/>
+                        <rect x="9" y="5" width="3" height="2" fill="#111827"/>
+                        <rect x="7" y="5" width="2" height="1" fill="#4b5563"/>
+                        <rect x="3" y="8" width="10" height="5" fill="#1e293b"/>
+                        <rect x="6" y="8" width="4" height="4" fill="#ffffff"/>
+                        <rect x="7" y="9" width="2" height="4" fill="#ef4444"/>
+                        <rect x="4" y="13" width="3" height="3" fill="#0f172a"/>
+                        <rect x="9" y="13" width="3" height="3" fill="#0f172a"/>
+                    </svg>
+                    <span class="bg-amber-500 text-white text-[10px] font-black px-2 py-0.2 rounded border-2 border-[#3d2516] shadow">👑 老闆巡視中</span>
+                </div>
+            </div>
+
+            <!-- 5. INTERACTIVE OFFICE FLOOR CONTENT -->
+            <div class="relative z-10 pt-[165px] pb-6 px-4 sm:px-6 min-h-[670px] flex flex-col lg:flex-row justify-between gap-6">
+
+                <!-- ==================== LEFT SIDE: EMPLOYEES AREA (8+ Employees) ==================== -->
+                <div class="w-full lg:w-[62%] flex flex-col justify-between">
+                    <div id="employeeDesksContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-7 pt-3 px-1">
+                        <!-- Dynamically rendered by js/office.js -->
+                    </div>
+
+                    <!-- Bottom Left Office Bar -->
+                    <div class="mt-5 flex flex-wrap items-center justify-between gap-3 bg-[#4d311c]/85 border-3 border-[#3d2516] rounded-lg px-3.5 py-2 text-amber-100 shadow-md">
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>💡 <strong>操作提示：</strong>點選任一員工可開啟 AI 聊天介面分配任務；1號員工「<strong>提示詞編輯師</strong>」負責編輯提示詞並於備註列出缺少的部分。</span>
+                        </div>
+                        <button onclick="openAddEmployeeModal()" class="kairo-btn bg-emerald-600 text-white text-xs px-3 py-1.5 flex items-center gap-1 shrink-0">
+                            <span>➕</span>
+                            <span>新增員工座位</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ==================== RIGHT SIDE: MANAGEMENT AREA (BOSS + MANAGER) ==================== -->
+                <div class="w-full lg:w-[33%] flex flex-col justify-around gap-6 pt-2 px-2">
+
+                    <!-- 1. BOSS EXECUTIVE STATION (老闆) -->
+                    <div id="bossDeskElement" onclick="openBossModal()" class="desk-station group bg-[#52321b]/90 border-4 border-[#3d2516] rounded-xl p-4 shadow-xl relative flex flex-col items-center text-center cursor-pointer">
+                        <div class="absolute -top-3 left-3 bg-amber-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded border-2 border-[#3d2516] shadow">
+                            👑 決策者・點我打開員工名冊
+                        </div>
+
+                        <div id="bossStationBubble" class="speech-bubble" style="top: -26px; bottom: auto;">
+                            點我指派任務給員工！
+                        </div>
+
+                        <div class="mt-4 relative flex flex-col items-center">
+                            <div id="bossSeatedSprite" class="animate-bob transition-opacity duration-200">
+                                <svg class="w-16 h-16 drop-shadow-md" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                                    <rect x="2" y="4" width="12" height="9" fill="#7c2d12"/>
+                                    <rect x="3" y="5" width="10" height="7" fill="#9a3412"/>
+                                    <rect x="4" y="1" width="8" height="2" fill="#facc15"/>
+                                    <rect x="4" y="0" width="2" height="1" fill="#facc15"/>
+                                    <rect x="7" y="0" width="2" height="1" fill="#facc15"/>
+                                    <rect x="10" y="0" width="2" height="1" fill="#facc15"/>
+                                    <rect x="3" y="2" width="10" height="3" fill="#271c19"/>
+                                    <rect x="4" y="4" width="8" height="4" fill="#fed7aa"/>
+                                    <rect x="4" y="5" width="3" height="2" fill="#0f172a"/>
+                                    <rect x="9" y="5" width="3" height="2" fill="#0f172a"/>
+                                    <rect x="7" y="5" width="2" height="1" fill="#facc15"/>
+                                    <rect x="3" y="8" width="10" height="5" fill="#1e293b"/>
+                                    <rect x="6" y="8" width="4" height="4" fill="#ffffff"/>
+                                    <rect x="7" y="9" width="2" height="4" fill="#ef4444"/>
+                                </svg>
+                            </div>
+                            <div id="bossAwaySign" class="hidden h-16 flex items-center justify-center">
+                                <span class="bg-amber-950/90 text-amber-300 border-2 border-amber-500 rounded px-2.5 py-1 text-xs font-bold">🚶 老闆正走去員工座位...</span>
+                            </div>
+
+                            <div class="w-48 h-12 bg-gradient-to-b from-[#a15c2f] to-[#7c421c] border-3 border-[#3d2516] rounded-md -mt-2 relative flex items-center justify-around px-3 shadow-lg">
+                                <div class="bg-amber-300 border-2 border-[#3d2516] px-2 py-0.5 text-[10px] font-black text-[#3d2516]">CEO BOSS</div>
+                                <div class="w-8 h-6 bg-slate-200 border-2 border-[#3d2516] rounded-t-sm flex items-center justify-center">
+                                    <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
+                                </div>
+                                <div class="w-4 h-4 bg-white border-2 border-[#3d2516] rounded-b-sm"></div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 flex items-center gap-2">
+                            <span class="station-label bg-amber-400 text-[#3d2516] border-2 border-[#3d2516] px-3 py-0.5 rounded-full text-xs font-black shadow-sm transition-colors">
+                                老闆 (Boss) - 任務分配總監
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 2. MANAGER MONITORING STATION (主管) -->
+                    <div id="managerDeskElement" onclick="openManagerModal()" class="desk-station group bg-[#433022]/95 border-4 border-[#3d2516] rounded-xl p-4 shadow-xl relative flex flex-col items-center text-center cursor-pointer mt-4">
+                        <div class="absolute -top-3 left-3 bg-sky-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded border-2 border-[#3d2516] shadow">
+                            📊 監控者・點我查看工作進度
+                        </div>
+
+                        <!-- Dynamic Overhead Status Icon (驚嘆號 / 綠色打勾 / 紅色三角形) -->
+                        <div id="managerOverheadBadge" class="manager-status-badge" title="主管頭頂即時狀態燈號">
+                            <!-- Rendered dynamically by updateManagerIndicator() -->
+                        </div>
+
+                        <div class="mt-6 relative flex flex-col items-center">
+                            <div class="animate-bob">
+                                <svg class="w-16 h-16 drop-shadow-md" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                                    <rect x="2" y="5" width="12" height="8" fill="#1e3a8a"/>
+                                    <rect x="4" y="1" width="8" height="3" fill="#5c3a21"/>
+                                    <rect x="3" y="2" width="1" height="3" fill="#5c3a21"/>
+                                    <rect x="12" y="2" width="1" height="3" fill="#5c3a21"/>
+                                    <rect x="4" y="4" width="8" height="4" fill="#fed7aa"/>
+                                    <rect x="5" y="5" width="2" height="2" fill="#1e293b"/>
+                                    <rect x="9" y="5" width="2" height="2" fill="#1e293b"/>
+                                    <rect x="3" y="5" width="1" height="3" fill="#38bdf8"/>
+                                    <rect x="4" y="7" width="3" height="1" fill="#38bdf8"/>
+                                    <rect x="3" y="8" width="10" height="5" fill="#0284c7"/>
+                                    <rect x="6" y="8" width="4" height="4" fill="#f8fafc"/>
+                                    <rect x="7" y="9" width="2" height="3" fill="#f59e0b"/>
+                                </svg>
+                            </div>
+
+                            <div class="w-48 h-12 bg-gradient-to-b from-[#94a3b8] to-[#64748b] border-3 border-[#3d2516] rounded-md -mt-2 relative flex items-center justify-around px-3 shadow-lg">
+                                <div class="w-9 h-6 bg-slate-900 border-2 border-[#3d2516] p-0.5 flex flex-col justify-between">
+                                    <div class="w-full h-1 bg-emerald-400"></div>
+                                    <div class="w-2/3 h-1 bg-sky-400"></div>
+                                </div>
+                                <div class="bg-sky-200 border-2 border-[#3d2516] px-1.5 py-0.5 text-[10px] font-black text-[#3d2516]">MANAGER</div>
+                                <div class="w-9 h-6 bg-slate-900 border-2 border-[#3d2516] p-0.5 flex flex-col justify-between">
+                                    <div class="w-3/4 h-1 bg-amber-400"></div>
+                                    <div class="w-full h-1 bg-emerald-400"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 flex items-center gap-2">
+                            <span class="station-label bg-sky-400 text-[#3d2516] border-2 border-[#3d2516] px-3 py-0.5 rounded-full text-xs font-black shadow-sm transition-colors">
+                                主管 (Manager) - 進度與品質控管
+                            </span>
+                        </div>
+
+                        <div id="managerQuickSummaryText" class="mt-2 text-[11px] font-bold text-amber-100 bg-black/35 px-2.5 py-0.5 rounded">
+                            目前全體待命中（點我查看全體員工工作進度）
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== MODAL 1: BOSS EMPLOYEE ROSTER MODAL (點開老闆的人物圖像) ==================== -->
+    <div id="bossModal" class="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 hidden items-center justify-center p-3 sm:p-6">
+        <div class="kairo-panel max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="kairo-header px-5 py-3.5 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">👑</span>
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-black pixel-font">老闆的員工名冊 — 點選員工分配任務</h2>
+                        <p class="text-xs text-amber-100 font-normal" style="text-shadow:none;">每位員工的名稱即為他的職務內容，點擊任一員工即可派發任務</p>
+                    </div>
+                </div>
+                <button onclick="closeBossModal()" class="kairo-btn bg-rose-600 text-white px-3 py-1 text-sm">✕ 關閉</button>
+            </div>
+
+            <div class="bg-amber-100/90 border-b-3 border-[#3d2516] px-5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                <div class="flex items-center gap-2 font-bold text-[#3d2516]">
+                    <span>🚶 分配任務時「老闆走去員工身旁」動畫：</span>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="bossModalWalkCheckbox" onchange="toggleWalkAnimation(this.checked)" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-stone-400 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-700 after:border after:rounded-full after:h-5 after:w-5 after:transition-all relative peer-checked:bg-emerald-600 border-2 border-[#3d2516]"></div>
+                    </label>
+                    <span id="bossModalWalkHint" class="text-emerald-800 font-black">（開啟：點選員工後老闆會親自走到他座位旁！）</span>
+                </div>
+                <button onclick="closeBossModal(); openAddEmployeeModal();" class="kairo-btn bg-emerald-600 text-white px-3 py-1 text-xs">
+                    ➕ 新增員工職務
+                </button>
+            </div>
+
+            <div id="bossRosterGrid" class="p-5 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <!-- Populated dynamically by js/modals.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 2: MANAGER PROGRESS DASHBOARD MODAL (點開主管的人物圖像) ==================== -->
+    <div id="managerModal" class="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 hidden items-center justify-center p-3 sm:p-6">
+        <div class="kairo-panel max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="kairo-header px-5 py-3.5 flex items-center justify-between" style="background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">📋</span>
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-black pixel-font">主管監控中心 — 全體員工工作進度畫面</h2>
+                        <p class="text-xs text-sky-100 font-normal" style="text-shadow:none;">即時檢視每位 AI 員工目前的執行進度、完成成果與異常警示</p>
+                    </div>
+                </div>
+                <button onclick="closeManagerModal()" class="kairo-btn bg-rose-600 text-white px-3 py-1 text-sm">✕ 關閉</button>
+            </div>
+
+            <div class="bg-sky-50 border-b-3 border-[#3d2516] px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+                <div id="managerStatsCounters" class="flex flex-wrap items-center gap-2 text-xs sm:text-sm font-black">
+                    <!-- Rendered dynamically -->
+                </div>
+                <div class="text-xs font-bold text-stone-600">
+                    燈號說明：❗ 有員工完成任務 ｜ ✅ 全部員工完成任務 ｜ ▲ 出現錯誤
+                </div>
+            </div>
+
+            <div id="managerProgressList" class="p-5 overflow-y-auto space-y-3">
+                <!-- Populated dynamically by js/modals.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 3: EMPLOYEE AI CHAT & TASK INTERFACE (AI 聊天與任務分配介面) ==================== -->
+    <div id="employeeChatModal" class="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 hidden items-center justify-center p-2 sm:p-5">
+        <div class="kairo-panel max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden">
+            <div id="chatModalHeader" class="kairo-header px-5 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div id="chatHeaderAvatar" class="w-11 h-11 bg-amber-100 border-3 border-[#3d2516] rounded-lg flex items-center justify-center overflow-hidden shrink-0"></div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="chatHeaderBadge" class="bg-[#3d2516] text-amber-300 text-xs font-black px-2 py-0.5 rounded">#1 號員工</span>
+                            <h2 id="chatHeaderTitle" class="text-lg sm:text-xl font-black pixel-font">提示詞編輯師</h2>
+                        </div>
+                        <p id="chatHeaderDesc" class="text-xs text-amber-100 font-normal" style="text-shadow:none;"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="openEditEmployeeModal(activeEmployeeId)" class="kairo-btn bg-stone-700 text-white px-2.5 py-1 text-xs" title="編輯此員工的職務名稱與系統指令">
+                        ✏️ 設定職務
+                    </button>
+                    <button onclick="closeEmployeeChatModal()" class="kairo-btn bg-rose-600 text-white px-3 py-1 text-sm">
+                        ✕ 關閉
+                    </button>
+                </div>
+            </div>
+
+            <!-- Banner for Employee #1 (Prompt Editor) -->
+            <div id="promptEditorWorkflowBanner" class="bg-amber-100 border-b-3 border-[#3d2516] px-5 py-2.5 hidden">
+                <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#3d2516]">
+                    <span class="bg-amber-500 text-white px-2 py-0.5 rounded border border-[#3d2516] font-black">職務說明</span>
+                    <span>輸入您想要打的提示詞，我會幫您進行<strong>結構化編輯</strong>，若發現提示詞有缺少的部分會寫在<strong>「📝 備註」</strong>告訴您！</span>
+                </div>
+            </div>
+
+            <!-- Chat Messages History Area -->
+            <div id="chatMessagesContainer" class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 bg-[#fdf5e2] min-h-[320px]">
+                <!-- Messages rendered dynamically -->
+            </div>
+
+            <!-- Primary Task Input Bar -->
+            <div class="bg-[#f3d9a4] border-t-4 border-[#3d2516] p-3.5 sm:px-5">
+                <div class="flex flex-col sm:flex-row gap-2.5">
+                    <textarea id="chatTaskInput" rows="2" placeholder="請輸入要交辦給這位員工的任務內容..." class="flex-1 bg-white border-3 border-[#3d2516] rounded-lg p-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none select-text"></textarea>
+                    <div class="flex sm:flex-col justify-between gap-2 shrink-0">
+                        <button id="sendTaskBtn" onclick="handleSendTask()" class="kairo-btn bg-amber-500 text-white px-5 py-2 text-sm flex items-center justify-center gap-1.5 flex-1">
+                            <span>🚀</span>
+                            <span id="sendTaskBtnLabel">分配任務</span>
+                        </button>
+                        <button onclick="clearEmployeeHistory(activeEmployeeId)" class="kairo-btn bg-stone-500 text-white px-3 py-1 text-xs flex items-center justify-center gap-1">
+                            <span>🧹</span>
+                            <span>清空對話紀錄</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 4: SETTINGS MODAL (設定面板) ==================== -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="kairo-panel max-w-lg w-full overflow-hidden">
+            <div class="kairo-header px-5 py-3.5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">⚙️</span>
+                    <h2 class="text-lg font-black pixel-font">AI 公司系統設定</h2>
+                </div>
+                <button onclick="closeSettingsModal()" class="kairo-btn bg-rose-600 text-white px-3 py-1 text-sm">✕</button>
+            </div>
+            <div class="p-5 space-y-4 text-sm max-h-[85vh] overflow-y-auto">
+                <!-- Gemini API Key Setting -->
+                <div class="bg-amber-100/70 border-3 border-[#3d2516] rounded-lg p-4 space-y-2.5">
+                    <h3 class="font-black text-base text-[#3d2516]">🔑 AI 模型與 API 金鑰設定</h3>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-700 mb-1">Gemini API Key（儲存在瀏覽器本機）：</label>
+                        <input type="password" id="settingsApiKeyInput" placeholder="請輸入您的 Gemini API Key (AIzaSy...)" class="w-full bg-white border-2 border-[#3d2516] rounded px-3 py-1.5 text-sm font-mono select-text focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-700 mb-1">使用模型：</label>
+                        <select id="settingsModelSelect" class="w-full bg-white border-2 border-[#3d2516] rounded px-3 py-1.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <option value="gemini-2.5-flash">gemini-2.5-flash (推薦・快速穩定)</option>
+                            <option value="gemini-2.5-pro">gemini-2.5-pro (高階推理)</option>
+                            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Walk Animation Setting -->
+                <div class="bg-amber-100/70 border-3 border-[#3d2516] rounded-lg p-4 flex items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-black text-base text-[#3d2516]">🚶 分配任務時老闆走過去的動畫</h3>
+                        <p class="text-xs text-stone-700 mt-0.5">開啟時，點選員工分配任務會讓老闆從右側座位走到該員工身旁；關閉則直接跳出聊天介面。</p>
+                    </div>
+                    <label class="inline-flex items-center cursor-pointer shrink-0">
+                        <input type="checkbox" id="settingsWalkCheckbox" onchange="toggleWalkAnimation(this.checked)" class="sr-only peer" checked>
+                        <div class="w-14 h-7 bg-stone-400 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:border-stone-700 after:border after:rounded-full after:h-5 after:w-6 after:transition-all relative peer-checked:bg-emerald-600 border-2 border-[#3d2516]"></div>
+                    </label>
+                </div>
+
+                <!-- Walking Speed Setting -->
+                <div class="bg-amber-100/70 border-3 border-[#3d2516] rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-black text-base text-[#3d2516]">⚡ 老闆走路速度</h3>
+                        <span id="walkSpeedValueLabel" class="text-xs font-black bg-amber-400 border-2 border-[#3d2516] px-2 py-0.5 rounded">1.0 秒</span>
+                    </div>
+                    <input type="range" id="walkSpeedRange" min="400" max="1800" step="200" value="950" onchange="updateWalkSpeed(this.value)" class="w-full accent-amber-600 cursor-pointer">
+                    <div class="flex justify-between text-xs text-stone-600 font-bold mt-1">
+                        <span>極快 (0.4秒)</span>
+                        <span>標準 (1.0秒)</span>
+                        <span>悠閒散步 (1.8秒)</span>
+                    </div>
+                </div>
+
+                <!-- 8-Bit Sound Effect Toggle -->
+                <div class="bg-amber-100/70 border-3 border-[#3d2516] rounded-lg p-4 flex items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-black text-base text-[#3d2516]">🔊 開羅風 8-Bit 像素音效</h3>
+                        <p class="text-xs text-stone-700 mt-0.5">點擊按鈕、老闆走路與員工完成任務時播放復古像素提示音。</p>
+                    </div>
+                    <label class="inline-flex items-center cursor-pointer shrink-0">
+                        <input type="checkbox" id="settingsSoundCheckbox" onchange="toggleSoundEffect(this.checked)" class="sr-only peer" checked>
+                        <div class="w-14 h-7 bg-stone-400 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:border-stone-700 after:border after:rounded-full after:h-5 after:w-6 after:transition-all relative peer-checked:bg-emerald-600 border-2 border-[#3d2516]"></div>
+                    </label>
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <button onclick="closeSettingsModal()" class="kairo-btn bg-stone-500 text-white px-4 py-2">取消</button>
+                    <button onclick="saveSettingsFromModal()" class="kairo-btn bg-emerald-600 text-white px-5 py-2">💾 儲存設定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 5: ADD / EDIT EMPLOYEE MODAL (新增或編輯員工職務) ==================== -->
+    <div id="employeeFormModal" class="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="kairo-panel max-w-lg w-full overflow-hidden">
+            <div class="kairo-header px-5 py-3.5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🧑‍💻</span>
+                    <h2 id="employeeFormModalTitle" class="text-lg font-black pixel-font">招募新 AI 員工</h2>
+                </div>
+                <button onclick="closeEmployeeFormModal()" class="kairo-btn bg-rose-600 text-white px-3 py-1 text-sm">✕</button>
+            </div>
+            <div class="p-5 space-y-4 text-sm">
+                <input type="hidden" id="editEmployeeTargetId" value="">
+                <div>
+                    <label class="block font-black text-[#3d2516] mb-1">員工名稱（即為他的職務內容）：</label>
+                    <input type="text" id="empNameInput" placeholder="例如：SEO關鍵字優化師、社群短影音腳本師..." class="w-full bg-white border-3 border-[#3d2516] rounded-lg px-3 py-2 font-bold select-text focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block font-black text-[#3d2516] mb-1">職務簡介（顯示於名冊與對話頂部）：</label>
+                    <input type="text" id="empDescInput" placeholder="簡短說明這位員工擅長協助的任務..." class="w-full bg-white border-3 border-[#3d2516] rounded-lg px-3 py-2 font-medium select-text focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block font-black text-[#3d2516] mb-1">AI 系統角色指令 (System Prompt)：</label>
+                    <textarea id="empPromptInput" rows="4" placeholder="設定這位 AI 員工收到任務時的專業角色、回答格式與注意事項..." class="w-full bg-white border-3 border-[#3d2516] rounded-lg p-3 font-medium select-text focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                </div>
+                <div>
+                    <label class="block font-black text-[#3d2516] mb-1">選擇像素造型：</label>
+                    <div id="avatarPickerGrid" class="grid grid-cols-4 gap-2">
+                        <!-- Rendered by js/modals.js -->
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button onclick="closeEmployeeFormModal()" class="kairo-btn bg-stone-500 text-white px-4 py-2">取消</button>
+                    <button onclick="saveEmployeeForm()" class="kairo-btn bg-emerald-600 text-white px-5 py-2">💾 儲存員工設定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- ==================== MODULAR JAVASCRIPT FILES ==================== -->
+    <script src="js/config.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/avatars.js"></script>
+    <script src="js/employees.js"></script>
+    <script src="js/office.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
