@@ -272,7 +272,11 @@ function triggerBossAssignInteraction(empId) {
         triggerFloatingStat(empId, '🔥 任務指派!');
 
         setTimeout(() => {
-            openEmployeeChatModal(empId);
+            try {
+                openEmployeeChatModal(empId);
+            } catch (err) {
+                console.error('Failed to open chat modal:', err);
+            }
 
             walkingBubble.textContent = `「好好表現！」`;
             walkingSprite.style.transitionDuration = `${Math.round(appConfig.walkDurationMs * 0.85)}ms`;

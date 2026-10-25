@@ -18,19 +18,19 @@ function openEmployeeChatModal(empId) {
     const chatTaskInput = document.getElementById('chatTaskInput');
 
     if (emp.isPromptEditor) {
-        promptBanner.classList.remove('hidden');
-        imageBanner.classList.add('hidden');
+        if (promptBanner) promptBanner.classList.remove('hidden');
+        if (imageBanner) imageBanner.classList.add('hidden');
         sendTaskBtnLabel.textContent = "✨ 送出提示詞進行編輯";
         chatTaskInput.placeholder = "請輸入您想要打的提示詞，我會幫您編輯並在備註列出缺少的部分...";
     } else if (emp.isImageGenerator) {
-        promptBanner.classList.add('hidden');
-        imageBanner.classList.remove('hidden');
+        if (promptBanner) promptBanner.classList.add('hidden');
+        if (imageBanner) imageBanner.classList.remove('hidden');
         sendTaskBtnLabel.textContent = "🎨 生成圖片並存入 image";
         chatTaskInput.placeholder = "請輸入圖片提示詞（例如：可愛像素風格的AI辦公室、賽博龐克貓咪喝咖啡...）";
         updateImageStorageStatusUI();
     } else {
-        promptBanner.classList.add('hidden');
-        imageBanner.classList.add('hidden');
+        if (promptBanner) promptBanner.classList.add('hidden');
+        if (imageBanner) imageBanner.classList.add('hidden');
         sendTaskBtnLabel.textContent = "🚀 分配任務給他";
         chatTaskInput.placeholder = `請輸入要交辦給【${emp.name}】的任務內容...`;
     }
@@ -152,7 +152,7 @@ function renderChatMessages(emp) {
 
                     ${img.caption ? `<div class="text-xs text-stone-700 font-medium bg-amber-50/70 p-2.5 rounded border border-amber-200 select-text">${escapeHtml(img.caption)}</div>` : ''}
 
-                    <!-- Save Status Box (Local `image/` + GitHub `image/`) -->
+                    <!-- Save Status Box (Local image/ + GitHub image/) -->
                     <div class="space-y-1.5">
                         ${localStatusHtml}
                         ${githubStatusHtml}
