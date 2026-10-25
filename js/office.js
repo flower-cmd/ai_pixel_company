@@ -42,6 +42,19 @@ function renderOfficeEmployees() {
 
         const charAnimClass = emp.status === 'working' ? 'animate-work' : 'animate-bob';
 
+        let specialTagHtml = '';
+        if (emp.isPromptEditor) {
+            specialTagHtml = `
+                <span class="absolute top-1 right-1.5 bg-amber-400 text-[#3d2516] border border-[#3d2516] text-[9px] font-black px-1 rounded">
+                    ★提示詞編輯
+                </span>`;
+        } else if (emp.isImageGenerator) {
+            specialTagHtml = `
+                <span class="absolute top-1 right-1.5 bg-pink-400 text-[#3d2516] border border-[#3d2516] text-[9px] font-black px-1 rounded">
+                    🎨生圖存檔
+                </span>`;
+        }
+
         return `
         <div id="empDesk_${emp.id}" onclick="handleEmployeeClickFromOffice(${emp.id})" 
              class="desk-station flex flex-col items-center p-2 rounded-xl bg-[#694427]/85 border-3 border-[#3d2516] shadow-lg relative group">
@@ -51,10 +64,7 @@ function renderOfficeEmployees() {
                 #${emp.id}
             </span>
 
-            ${emp.isPromptEditor ? `
-            <span class="absolute top-1 right-1.5 bg-amber-400 text-[#3d2516] border border-[#3d2516] text-[9px] font-black px-1 rounded">
-                ★提示詞編輯
-            </span>` : ''}
+            ${specialTagHtml}
 
             <!-- Overhead Speech / Status Bubble -->
             <div class="relative w-full flex flex-col items-center mt-3">
@@ -289,7 +299,7 @@ function triggerFloatingStat(empId, text) {
 }
 
 const AMBIENT_BUBBLES = [
-    "感覺不錯", "交給我改提示詞！", "靈感湧現中",
+    "感覺不錯", "交給我改提示詞！", "交給我生圖！", "靈感湧現中",
     "喝杯咖啡☕", "邏輯超順暢", "效率+100%", "隨時待命中！"
 ];
 

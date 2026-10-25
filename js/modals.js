@@ -24,6 +24,13 @@ function renderBossRoster() {
 
     grid.innerHTML = employees.map(emp => {
         const statusBadge = getStatusBadgeHtml(emp.status, emp.progress);
+        let roleTag = '';
+        if (emp.isPromptEditor) {
+            roleTag = `<span class="bg-amber-400 text-[#3d2516] border border-[#3d2516] text-[10px] font-black px-1.5 py-0.2 rounded">提示詞編輯＋缺漏備註</span>`;
+        } else if (emp.isImageGenerator) {
+            roleTag = `<span class="bg-pink-400 text-[#3d2516] border border-[#3d2516] text-[10px] font-black px-1.5 py-0.2 rounded">AI 生圖＋自動存入 image/</span>`;
+        }
+
         return `
         <div onclick="selectEmployeeFromBossRoster(${emp.id})" 
              class="kairo-panel !bg-white hover:!bg-amber-50 p-3.5 cursor-pointer transition-transform hover:-translate-y-0.5 flex items-center justify-between gap-3">
@@ -35,7 +42,7 @@ function renderBossRoster() {
                 <div class="min-w-0">
                     <div class="flex items-center gap-1.5 flex-wrap">
                         <h3 class="font-black text-base text-[#3d2516] truncate">${escapeHtml(emp.name)}</h3>
-                        ${emp.isPromptEditor ? `<span class="bg-amber-400 text-[#3d2516] border border-[#3d2516] text-[10px] font-black px-1.5 py-0.2 rounded">提示詞編輯＋缺漏備註</span>` : ''}
+                        ${roleTag}
                     </div>
                     <p class="text-xs text-stone-600 line-clamp-2 mt-0.5">${escapeHtml(emp.description)}</p>
                     <div class="mt-1.5 flex items-center gap-2">
@@ -227,18 +234,28 @@ function openSettingsModal() {
     playRetroSound('click');
     const apiKeyInput = document.getElementById('settingsApiKeyInput');
     const modelSelect = document.getElementById('settingsModelSelect');
+    const imageModelSelect = document.getElementById('settingsImageModelSelect');
+    const githubTokenInput = document.getElementById('settingsGithubTokenInput');
+    const githubRepoInput = document.getElementById('settingsGithubRepoInput');
+    const githubBranchInput = document.getElementById('settingsGithubBranchInput');
     const walkCheckbox = document.getElementById('settingsWalkCheckbox');
     const walkSpeedRange = document.getElementById('walkSpeedRange');
     const soundCheckbox = document.getElementById('settingsSoundCheckbox');
 
     if (apiKeyInput) apiKeyInput.value = appConfig.apiKey;
     if (modelSelect) modelSelect.value = appConfig.geminiModel;
+    if (imageModelSelect) imageModelSelect.value = appConfig.imageModel;
+    if (githubTokenInput) githubTokenInput.value = appConfig.githubToken;
+    if (githubRepoInput) githubRepoInput.value = appConfig.githubRepo;
+    if (githubBranchInput) githubBranchInput.value = appConfig.githubBranch;
     if (walkCheckbox) walkCheckbox.checked = appConfig.walkAnimationEnabled;
     if (walkSpeedRange) {
         walkSpeedRange.value = appConfig.walkDurationMs;
         updateWalkSpeed(appConfig.walkDurationMs);
     }
     if (soundCheckbox) soundCheckbox.checked = appConfig.soundEnabled;
+
+    updateImageStorageStatusUI();
 
     const modal = document.getElementById('settingsModal');
     modal.classList.remove('hidden');
@@ -255,9 +272,20 @@ function closeSettingsModal() {
 function saveSettingsFromModal() {
     const apiKeyInput = document.getElementById('settingsApiKeyInput');
     const modelSelect = document.getElementById('settingsModelSelect');
+    const imageModelSelect = document.getElementById('settingsImageModelSelect');
+    const githubTokenInput = document.getElementById('settingsGithubTokenInput');
+    const githubRepoInput = document.getElementById('settingsGithubRepoInput');
+    const githubBranchInput = document.getElementById('settingsGithubBranchInput');
+
     if (apiKeyInput) appConfig.apiKey = apiKeyInput.value.trim();
     if (modelSelect) appConfig.geminiModel = modelSelect.value.trim();
+    if (imageModelSelect) appConfig.imageModel = imageModelSelect.value.trim();
+    if (githubTokenInput) appConfig.githubToken = githubTokenInput.value.trim();
+    if (githubRepoInput) appConfig.githubRepo = githubRepoInput.value.trim();
+    if (githubBranchInput) appConfig.githubBranch = githubBranchInput.value.trim() || 'main';
+
     saveConfigToStorage();
+    updateImageStorageStatusUI();
     closeSettingsModal();
     showToast('💾 設定已儲存！');
 }
@@ -352,6 +380,7 @@ function saveEmployeeForm() {
             name: name,
             avatarKey: selectedAvatarKeyForForm,
             isPromptEditor: false,
+            isImageGenerator: false,
             description: desc,
             systemPrompt: sysPrompt,
             status: "idle",

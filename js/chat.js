@@ -12,16 +12,25 @@ function openEmployeeChatModal(empId) {
     document.getElementById('chatHeaderTitle').textContent = emp.name;
     document.getElementById('chatHeaderDesc').textContent = emp.description;
 
-    const workflowBanner = document.getElementById('promptEditorWorkflowBanner');
+    const promptBanner = document.getElementById('promptEditorWorkflowBanner');
+    const imageBanner = document.getElementById('imageGeneratorWorkflowBanner');
     const sendTaskBtnLabel = document.getElementById('sendTaskBtnLabel');
     const chatTaskInput = document.getElementById('chatTaskInput');
 
     if (emp.isPromptEditor) {
-        workflowBanner.classList.remove('hidden');
+        promptBanner.classList.remove('hidden');
+        imageBanner.classList.add('hidden');
         sendTaskBtnLabel.textContent = "✨ 送出提示詞進行編輯";
         chatTaskInput.placeholder = "請輸入您想要打的提示詞，我會幫您編輯並在備註列出缺少的部分...";
+    } else if (emp.isImageGenerator) {
+        promptBanner.classList.add('hidden');
+        imageBanner.classList.remove('hidden');
+        sendTaskBtnLabel.textContent = "🎨 生成圖片並存入 image";
+        chatTaskInput.placeholder = "請輸入圖片提示詞（例如：可愛像素風格的AI辦公室、賽博龐克貓咪喝咖啡...）";
+        updateImageStorageStatusUI();
     } else {
-        workflowBanner.classList.add('hidden');
+        promptBanner.classList.add('hidden');
+        imageBanner.classList.add('hidden');
         sendTaskBtnLabel.textContent = "🚀 分配任務給他";
         chatTaskInput.placeholder = `請輸入要交辦給【${emp.name}】的任務內容...`;
     }
@@ -104,6 +113,62 @@ function renderChatMessages(emp) {
             </div>`;
         }
 
+        // Structured output for Employee #2: Generated Image + Local & GitHub `image/` Save Status
+        if (msg.type === 'image_result' && msg.imageData) {
+            const img = msg.imageData;
+            const dataUri = `data:${img.mimeType};base64,${img.base64Data}`;
+
+            const localStatusHtml = img.localSaved
+                ? `<div class="flex items-center gap-1.5 text-xs font-black text-emerald-800 bg-emerald-100 border border-emerald-600 rounded px-2.5 py-1">
+                       <span>📂 本機存檔：已自動存入 <code>${escapeHtml(img.localPath)}</code></span>
+                   </div>`
+                : `<div class="flex items-center justify-between gap-2 text-xs font-bold text-amber-950 bg-amber-100 border border-amber-500 rounded px-2.5 py-1">
+                       <span>📂 本機 image 資料夾：${escapeHtml(img.localReason || '尚未綁定')}</span>
+                       <button onclick="manualSaveImageToLocal(${idx})" class="kairo-btn bg-amber-500 text-white text-[11px] px-2 py-0.5 shrink-0">📁 選擇並存入本機 image</button>
+                   </div>`;
+
+            const githubStatusHtml = img.githubSaved
+                ? `<div class="flex items-center justify-between gap-2 text-xs font-black text-emerald-800 bg-emerald-100 border border-emerald-600 rounded px-2.5 py-1">
+                       <span>☁️ GitHub 存檔：已自動存入 <code>${escapeHtml(img.githubPath)}</code></span>
+                       <a href="${escapeHtml(img.githubUrl)}" target="_blank" rel="noopener" class="underline text-sky-700 hover:text-sky-900">前往 GitHub 查看 ↗</a>
+                   </div>`
+                : `<div class="flex items-center justify-between gap-2 text-xs font-bold text-stone-700 bg-stone-100 border border-stone-400 rounded px-2.5 py-1">
+                       <span>☁️ GitHub 雲端 image 資料夾：${escapeHtml(img.githubReason || '未設定')}</span>
+                       <button onclick="manualSaveImageToGitHub(${idx})" class="kairo-btn bg-sky-600 text-white text-[11px] px-2 py-0.5 shrink-0">☁️ 同步至 GitHub image</button>
+                   </div>`;
+
+            return `
+            <div class="flex justify-start">
+                <div class="max-w-[92%] w-full bg-white border-3 border-[#3d2516] rounded-2xl rounded-tl-xs p-4 shadow-md space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-amber-200 pb-2">
+                        <span class="bg-pink-400 text-[#3d2516] border-2 border-[#3d2516] text-xs font-black px-2.5 py-0.5 rounded">🎨 AI 圖片生成結果</span>
+                        <span class="text-xs font-mono font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded border border-stone-300">image/${escapeHtml(img.filename)}</span>
+                    </div>
+
+                    <!-- Generated Image Preview -->
+                    <div class="bg-stone-900 border-3 border-[#3d2516] rounded-xl p-2 flex items-center justify-center overflow-hidden">
+                        <img src="${dataUri}" alt="${escapeHtml(img.prompt)}" class="max-h-[420px] w-auto rounded-lg object-contain mx-auto shadow"/>
+                    </div>
+
+                    ${img.caption ? `<div class="text-xs text-stone-700 font-medium bg-amber-50/70 p-2.5 rounded border border-amber-200 select-text">${escapeHtml(img.caption)}</div>` : ''}
+
+                    <!-- Save Status Box (Local `image/` + GitHub `image/`) -->
+                    <div class="space-y-1.5">
+                        ${localStatusHtml}
+                        ${githubStatusHtml}
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap items-center justify-end gap-2 pt-1">
+                        <button onclick="downloadGeneratedImage(${idx})" class="kairo-btn bg-emerald-600 text-white text-xs px-3 py-1.5 flex items-center gap-1">
+                            <span>⬇️</span>
+                            <span>下載圖片 (${escapeHtml(img.filename)})</span>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }
+
         // Error Message Card
         if (msg.type === 'error') {
             return `
@@ -134,6 +199,72 @@ function renderChatMessages(emp) {
     container.scrollTop = container.scrollHeight;
 }
 
+/**
+ * Manual trigger on an image card to bind local `image/` folder and save immediately
+ */
+async function manualSaveImageToLocal(msgIndex) {
+    const emp = employees.find(e => e.id === activeEmployeeId);
+    const msg = emp?.messages?.[msgIndex];
+    if (!msg || !msg.imageData) return;
+
+    const res = await saveImageToLocalFolder(msg.imageData.base64Data, msg.imageData.filename, true);
+    if (res.saved) {
+        msg.imageData.localSaved = true;
+        msg.imageData.localPath = res.path;
+        renderChatMessages(emp);
+        playRetroSound('complete');
+        showToast(`✅ 圖片已存入本機：${res.path}`);
+    } else if (res.reason) {
+        showToast(`⚠️ ${res.reason}`);
+    }
+}
+
+/**
+ * Manual trigger on an image card to upload to GitHub `image/` folder
+ */
+async function manualSaveImageToGitHub(msgIndex) {
+    const emp = employees.find(e => e.id === activeEmployeeId);
+    const msg = emp?.messages?.[msgIndex];
+    if (!msg || !msg.imageData) return;
+
+    if (!appConfig.githubToken || !appConfig.githubRepo) {
+        openSettingsModal();
+        showToast('💡 請先在設定中填寫 GitHub Token 與儲存庫名稱 (帳號/Repo)！');
+        return;
+    }
+
+    showToast('☁️ 正在上傳圖片至 GitHub image 資料夾...');
+    const res = await saveImageToGitHubRepo(msg.imageData.base64Data, msg.imageData.filename, msg.imageData.prompt);
+    if (res.saved) {
+        msg.imageData.githubSaved = true;
+        msg.imageData.githubPath = res.path;
+        msg.imageData.githubUrl = res.htmlUrl;
+        renderChatMessages(emp);
+        playRetroSound('complete');
+        showToast(`✅ 已成功存入 GitHub：${res.path}`);
+    } else {
+        msg.imageData.githubReason = res.reason;
+        renderChatMessages(emp);
+        playRetroSound('error');
+        showToast(`⚠️ GitHub 上傳失敗：${res.reason}`);
+    }
+}
+
+function downloadGeneratedImage(msgIndex) {
+    const emp = employees.find(e => e.id === activeEmployeeId);
+    const msg = emp?.messages?.[msgIndex];
+    if (!msg || !msg.imageData) return;
+
+    playRetroSound('click');
+    const a = document.createElement('a');
+    a.href = `data:${msg.imageData.mimeType};base64,${msg.imageData.base64Data}`;
+    a.download = msg.imageData.filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast(`⬇️ 已開始下載：${msg.imageData.filename}`);
+}
+
 function handleSendTask() {
     const emp = employees.find(e => e.id === activeEmployeeId);
     if (!emp) return;
@@ -145,6 +276,8 @@ function handleSendTask() {
 
     if (emp.isPromptEditor) {
         submitPromptEditorTask();
+    } else if (emp.isImageGenerator) {
+        submitImageGeneratorTask();
     } else {
         submitGeneralEmployeeTask();
     }

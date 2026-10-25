@@ -4,6 +4,7 @@
 
 window.addEventListener('DOMContentLoaded', () => {
     syncWalkToggleUI();
+    restoreDirHandleFromIDB();
     renderOfficeEmployees();
     updateManagerIndicator();
     startAmbientOfficeLife();

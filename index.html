@@ -186,7 +186,7 @@
                     <div class="mt-5 flex flex-wrap items-center justify-between gap-3 bg-[#4d311c]/85 border-3 border-[#3d2516] rounded-lg px-3.5 py-2 text-amber-100 shadow-md">
                         <div class="flex items-center gap-2 text-xs">
                             <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                            <span>💡 <strong>操作提示：</strong>點選任一員工可開啟 AI 聊天介面分配任務；1號員工「<strong>提示詞編輯師</strong>」負責編輯提示詞並於備註列出缺少的部分。</span>
+                            <span>💡 <strong>操作提示：</strong>1號員工負責「<strong>編輯提示詞＋缺漏備註</strong>」；2號員工負責「<strong>AI 生成圖片並自動存入 image 資料夾</strong>」！</span>
                         </div>
                         <button onclick="openAddEmployeeModal()" class="kairo-btn bg-emerald-600 text-white text-xs px-3 py-1.5 flex items-center gap-1 shrink-0">
                             <span>➕</span>
@@ -400,6 +400,21 @@
                 </div>
             </div>
 
+            <!-- Banner for Employee #2 (Image Generator + Local/GitHub `image/` Auto-Save) -->
+            <div id="imageGeneratorWorkflowBanner" class="bg-pink-100 border-b-3 border-[#3d2516] px-5 py-2.5 hidden">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="bg-pink-500 text-white px-2 py-0.5 rounded border border-[#3d2516] font-black">🎨 自動存圖設定</span>
+                        <span>📂 本機 <code>image/</code>：<strong id="bannerLocalFolderStatus" class="text-amber-900">尚未綁定</strong></span>
+                        <span>☁️ GitHub <code>image/</code>：<strong id="bannerGithubFolderStatus" class="text-stone-600">未設定</strong></span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="bindLocalImageFolder()" class="kairo-btn bg-amber-500 text-white px-2.5 py-1 text-xs">📁 綁定本機 image 資料夾</button>
+                        <button onclick="openSettingsModal()" class="kairo-btn bg-sky-600 text-white px-2.5 py-1 text-xs">☁️ 設定 GitHub 自動存檔</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Chat Messages History Area -->
             <div id="chatMessagesContainer" class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 bg-[#fdf5e2] min-h-[320px]">
                 <!-- Messages rendered dynamically -->
@@ -442,13 +457,56 @@
                         <label class="block text-xs font-bold text-stone-700 mb-1">Gemini API Key（儲存在瀏覽器本機）：</label>
                         <input type="password" id="settingsApiKeyInput" placeholder="請輸入您的 Gemini API Key (AIzaSy...)" class="w-full bg-white border-2 border-[#3d2516] rounded px-3 py-1.5 text-sm font-mono select-text focus:outline-none focus:ring-2 focus:ring-amber-500">
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-stone-700 mb-1">使用模型：</label>
-                        <select id="settingsModelSelect" class="w-full bg-white border-2 border-[#3d2516] rounded px-3 py-1.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            <option value="gemini-2.5-flash">gemini-2.5-flash (推薦・快速穩定)</option>
-                            <option value="gemini-2.5-pro">gemini-2.5-pro (高階推理)</option>
-                            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
-                        </select>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-stone-700 mb-1">文字任務模型：</label>
+                            <select id="settingsModelSelect" class="w-full bg-white border-2 border-[#3d2516] rounded px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="gemini-2.5-flash">gemini-2.5-flash (推薦)</option>
+                                <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+                                <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-stone-700 mb-1">2號員工生圖模型：</label>
+                            <select id="settingsImageModelSelect" class="w-full bg-white border-2 border-[#3d2516] rounded px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="gemini-2.5-flash-image">gemini-2.5-flash-image (推薦)</option>
+                                <option value="gemini-2.0-flash-exp-image-generation">gemini-2.0-flash-exp-image-generation</option>
+                                <option value="gemini-3.1-flash-image-preview">gemini-3.1-flash-image-preview</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Storage Settings: Local `image/` + GitHub `image/` -->
+                <div class="bg-pink-50 border-3 border-[#3d2516] rounded-lg p-4 space-y-3">
+                    <h3 class="font-black text-base text-[#3d2516]">🖼️ 2號員工「image 資料夾」自動存檔設定</h3>
+
+                    <!-- Mode 1: Local PC Folder -->
+                    <div class="bg-white border-2 border-[#3d2516] rounded-lg p-3 flex items-center justify-between gap-2">
+                        <div>
+                            <div class="font-black text-xs text-[#3d2516]">💻 電腦本機 <code>image</code> 資料夾存檔</div>
+                            <div id="settingsLocalFolderStatus" class="text-[11px] text-stone-600 font-bold mt-0.5">尚未綁定</div>
+                        </div>
+                        <button type="button" onclick="bindLocalImageFolder()" class="kairo-btn bg-amber-500 text-white text-xs px-3 py-1.5 shrink-0">📁 選擇 image 資料夾</button>
+                    </div>
+
+                    <!-- Mode 2: GitHub Cloud `image/` Auto-Upload (Works on Mobile when PC is OFF) -->
+                    <div class="bg-white border-2 border-[#3d2516] rounded-lg p-3 space-y-2">
+                        <div class="font-black text-xs text-sky-900">☁️ GitHub 雲端 <code>image/</code> 自動存檔（電腦關機時用手機也能自動存進 GitHub！）</div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-stone-700 mb-0.5">GitHub Personal Access Token (需勾選 repo / contents 寫入權限)：</label>
+                            <input type="password" id="settingsGithubTokenInput" placeholder="ghp_... 或 github_pat_..." class="w-full bg-stone-50 border-2 border-[#3d2516] rounded px-2.5 py-1 text-xs font-mono select-text focus:outline-none">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <div class="sm:col-span-2">
+                                <label class="block text-[11px] font-bold text-stone-700 mb-0.5">GitHub 儲存庫 (格式：帳號/Repo名稱)：</label>
+                                <input type="text" id="settingsGithubRepoInput" placeholder="例如：bryan/ai_pixel_company" class="w-full bg-stone-50 border-2 border-[#3d2516] rounded px-2.5 py-1 text-xs font-mono select-text focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-stone-700 mb-0.5">分支 (Branch)：</label>
+                                <input type="text" id="settingsGithubBranchInput" placeholder="main" value="main" class="w-full bg-stone-50 border-2 border-[#3d2516] rounded px-2.5 py-1 text-xs font-mono select-text focus:outline-none">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
